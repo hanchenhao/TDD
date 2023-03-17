@@ -15,13 +15,11 @@ public class ArgsTest {
         Assertions.assertTrue(option.logging());
     }
     @Test
-    public void should_get_boolean_option_to_false_if_flag_present(){
+    public void should_get_boolean_option_to_false_if_not_flag_present(){
         val option = Args.parse(BooleanOption.class);
         Assertions.assertFalse(option.logging());
     }
     static record BooleanOption(@Option("l")boolean logging){}
-    //  输入：-p 8080，输出： options.port()=8080
-
     @Test
     public void should_get_int_option_if_flag_present(){
         val option = Args.parse(IntOption.class, "-p", "8080");
@@ -52,19 +50,28 @@ public class ArgsTest {
         // 输入-l -p 8080 -d /usr/logs，将内容进行分割，并提取参数
         Options options = Args.parse(Options.class, "-l", "-p", "8080", "-d", "/usr/logs");
         Assertions.assertTrue(options.logging());
-        Assertions.assertEquals(8008, options.port());
+        Assertions.assertEquals(8080, options.port());
         Assertions.assertEquals("/usr/logs", options.directory());
 
+    }
+
+    @Test
+    public void input_multiple_parameter_to_get_ture_option_by_out_of_order() {
+        // 输入-l -p 8080 -d /usr/logs，将内容进行分割，并提取参数
+        Options options = Args.parse(Options.class,  "-d", "/usr/logs","-l","-p", "8080");
+        Assertions.assertTrue(options.logging());
+        Assertions.assertEquals(8080, options.port());
+        Assertions.assertEquals("/usr/logs", options.directory());
+
+    }
+
+    static record Options(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
     }
 
     //sad path
     // TODO 输入：-l t f，输出：异常提示
     // TODO 输入：-p 8080 8081，异常提示
     // TODO 输入：-d /usr/logs /usr/log2，输出： 异常提示
-    // default value
-    // TODO -p 默认=0
-    // TODO -d 默认=""
-    // TODO -l 默认=false
 
     // -g this is a list -d 1 2 -3 5
 
@@ -81,8 +88,6 @@ public class ArgsTest {
 
     }
 
-    static record Options(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
-    }
 
     static record ListOptions(@Option("g") String[] group, @Option("d") int[] decimals) {
     }
