@@ -12,8 +12,7 @@ public class Args {
         try {
             val values = Arrays.stream(constructor.getParameters())
                     .map(parameter -> parseArguments(arguments, parameter)).toArray();
-            val instance = constructor.newInstance(values);
-            return (T) instance;
+            return (T) constructor.newInstance(values);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -26,31 +25,4 @@ public class Args {
     private static Map<Class<?>, ArgumentParser> PARSERS = Map.of(boolean.class, new BooleanParser(),
             int.class, new IntParser(),
             String.class, new StringParser());
-
-    interface ArgumentParser {
-        Object parse(List<String> arguments, Option option);
-    }
-
-    static class BooleanParser implements ArgumentParser {
-        @Override
-        public Object parse(List<String> arguments, Option option) {
-            return arguments.contains("-" + option.value());
-        }
-    }
-
-    static class IntParser implements ArgumentParser {
-        @Override
-        public Object parse(List<String> arguments, Option option) {
-            int index = arguments.indexOf("-" + option.value());
-            return arguments.size() == 1 ? 0 : Integer.parseInt(arguments.get(index + 1));
-        }
-    }
-
-    static class StringParser implements ArgumentParser {
-        @Override
-        public Object parse(List<String> arguments, Option option) {
-            int index = arguments.indexOf("-" + option.value());
-            return arguments.size() == 1 ? "" : String.valueOf(arguments.get(index + 1));
-        }
-    }
 }
