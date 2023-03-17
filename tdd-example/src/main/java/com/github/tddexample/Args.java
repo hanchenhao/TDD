@@ -3,8 +3,7 @@ package com.github.tddexample;
 import lombok.val;
 
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Args {
     public static <T> T parse(Class<T> optionsClass, String... args) {
@@ -21,19 +20,12 @@ public class Args {
     }
 
     private static Object parseArguments(List<String> arguments, Parameter parameter) {
-        val option = parameter.getAnnotation(Option.class);
-        Object value = null;
-        if (parameter.getType() == boolean.class) {
-            value = new BooleanParser().parse(arguments, option);
-        }
-        if (parameter.getType() == int.class) {
-            value = new IntParser().parse(arguments, option);
-        }
-        if (parameter.getType() == String.class) {
-            value = new StringParser().parse(arguments, option);
-        }
-        return value;
+        return PARSERS.get(parameter.getType()).parse(arguments, parameter.getAnnotation(Option.class));
     }
+
+    private static Map<Class<?>, ArgumentParser> PARSERS = Map.of(boolean.class, new BooleanParser(),
+            int.class, new IntParser(),
+            String.class, new StringParser());
 
     interface ArgumentParser {
         Object parse(List<String> arguments, Option option);
