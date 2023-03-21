@@ -1,11 +1,10 @@
 package com.github.tddexample;
 
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
 
 public class ArgsTest {
 
@@ -49,19 +48,6 @@ public class ArgsTest {
 
     }
 
-    static record Options(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
-    }
-
-    @Test
-    @Disabled
-    public void example_2() {
-        // 输入g this is a list -d 1 2 -3 5，将内容进行分割，并提取参数列表
-        val listOptions = Args.parse(ListOptions.class, "-g", "this", "is", "a", "list", "-d", "1", "2", "3");
-        Assertions.assertEquals(new String[]{"this", "is", "a", "list"}, listOptions.group());
-        Assertions.assertEquals(new int[]{1, 2, 3}, listOptions.decimals());
-
-    }
-
-    static record ListOptions(@Option("g") String[] group, @Option("d") int[] decimals) {
+     record Options(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
     }
 }

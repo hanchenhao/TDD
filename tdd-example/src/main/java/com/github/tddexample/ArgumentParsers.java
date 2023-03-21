@@ -3,33 +3,49 @@ package com.github.tddexample;
 import lombok.val;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-class ArgumentParsers implements ArgumentParser {
+class ArgumentParsers implements ArgumentParser{
 
-    final private Object defaultValue;
-    final private Function<String, Object> valueParser;
-    int expectedSize;
+     private final Object defaultValue;
+     private final Function<String, Object> valueParser;
+     int expectedSize;
 
-    public ArgumentParsers(Object defaultValue, java.util.function.Function<String, Object> valueParser, int expectedSize) {
+     private ArgumentParsers(Object defaultValue, java.util.function.Function<String, Object> valueParser, int expectedSize) {
         this.defaultValue = defaultValue;
         this.valueParser = valueParser;
         this.expectedSize = expectedSize;
     }
-
-    @Override
-    public Object parse(List<String> arguments, Option option) {
-        int index = arguments.indexOf("-" + option.value());
-        if (option.value().equals("l") && index == -1) return defaultValue;
-        val values = values(arguments, index);
-        if (values.size() < expectedSize) return defaultValue;
-        if (values.size() > expectedSize) throw new TooManyArgumentsException();
-        String value = arguments.get(index + expectedSize);
-        return parseValue(value);
+    static ArgumentParsers  bool(){
+       return new ArgumentParsers(false, (it) -> Objects.equals(it, "-l"), 0);
     }
 
-    List<String> values(List<String> arguments, int index) {
+    static ArgumentParsers unary(Object defaultValue, java.util.function.Function<String, Object> valueParser){
+         return new ArgumentParsers(defaultValue,valueParser,1);
+    }
+
+    @Override
+     public Object parse(List<String> arguments, Option option) {
+        int index = arguments.indexOf("-" + option.value());
+        if (booleanChecked(option, index)) return defaultValue;
+        if (valuesSizeChecked(arguments, index)) return defaultValue;
+        return valueParser.apply(arguments.get(index + expectedSize));
+    }
+
+    private boolean valuesSizeChecked(List<String> arguments, int index) {
+        val values = values(arguments, index);
+        if (values.size() < expectedSize) return true;
+        if (values.size() > expectedSize) throw new TooManyArgumentsException();
+        return false;
+    }
+
+    private static boolean booleanChecked(Option option, int index) {
+        return option.value().equals("l") && index == -1;
+    }
+
+    static List<String> values(List<String> arguments, int index) {
         int followingFlag = IntStream.range(index + 1, arguments.size())
                 .filter(it -> arguments.get(it).matches("^-[a-zA-Z-]+$"))
                 .findFirst()
@@ -37,7 +53,4 @@ class ArgumentParsers implements ArgumentParser {
         return arguments.subList(index + 1, followingFlag);
     }
 
-    protected Object parseValue(String value) {
-        return valueParser.apply(value);
-    }
 }
