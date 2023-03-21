@@ -25,14 +25,14 @@ class BooleanParserTest {
     @Test
     public void should_not_allow_extra_arguments_for_bool_option() {
         Assertions.assertThrows(TooManyArgumentsException.class,
-                () -> new SingleValuedParser(false, (it) -> Objects.equals(it, "-l"), 0)
+                () -> new ArgumentParsers(false, (it) -> Objects.equals(it, "-l"), 0)
                         .parse(Arrays.asList("-l", "t", "f"), option()));
     }
 
     // 未输入：-l 默认值false
     @Test
     public void should_set_a_default_value_for_bool_option() {
-        Assertions.assertFalse((Boolean) new SingleValuedParser(false,
+        Assertions.assertFalse((Boolean) new ArgumentParsers(false,
                 (it) -> Objects.equals(it, "-l"), 0)
                 .parse(List.of(), option()));
     }

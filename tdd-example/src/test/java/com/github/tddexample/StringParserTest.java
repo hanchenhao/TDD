@@ -28,13 +28,13 @@ class StringParserTest {
     // 输入：-d /usr/logs /usr/log2，输出： 异常提示
     @Test
     public void should_not_allow_extra_arguments_for_string_option() {
-        Assertions.assertThrows(TooManyArgumentsException.class, () -> new SingleValuedParser("", String::valueOf,1)
+        Assertions.assertThrows(TooManyArgumentsException.class, () -> new ArgumentParsers("", String::valueOf,1)
                 .parse(Arrays.asList("/user/logs", "/user/log2"), option()));
     }
 
     @Test
     public void should_set_a_default_value_for_string_option() {
-        Assertions.assertEquals("", new SingleValuedParser("", String::valueOf,1)
+        Assertions.assertEquals("", new ArgumentParsers("", String::valueOf,1)
                 .parse(List.of(), option()));
     }
 

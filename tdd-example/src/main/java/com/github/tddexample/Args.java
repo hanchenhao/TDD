@@ -23,7 +23,7 @@ public class Args {
     }
 
     final private static Map<Class<?>, ArgumentParser> PARSERS = Map.of(boolean.class,
-            new SingleValuedParser(false, (it) -> Objects.equals(it, "-l"), 0),
-            int.class, new SingleValuedParser(0, Integer::valueOf, 1),
-            String.class, new SingleValuedParser("", String::valueOf, 1));
+            new ArgumentParsers(false, (it) -> Objects.equals(it, "-l"), 0),
+            int.class, new ArgumentParsers(0, Integer::valueOf, 1),
+            String.class, new ArgumentParsers("", String::valueOf, 1));
 }

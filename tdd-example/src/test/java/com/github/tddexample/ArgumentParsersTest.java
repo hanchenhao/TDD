@@ -8,7 +8,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-class SingleValuedParserTest {
+class ArgumentParsersTest {
 
     @Test
     public void should_get_int_option_if_flag_present() {
@@ -29,13 +29,13 @@ class SingleValuedParserTest {
     @Test
     public void should_not_allow_extra_arguments_for_bool_option() {
         Assertions.assertThrows(TooManyArgumentsException.class,
-                () -> new SingleValuedParser(0, Integer::valueOf, 1)
+                () -> new ArgumentParsers(0, Integer::valueOf, 1)
                         .parse(Arrays.asList("8080", "8801"), option()));
     }
 
     @Test
     public void should_set_a_default_value_for_bool_option() {
-        Assertions.assertEquals(0, new SingleValuedParser(0, Integer::valueOf, 1)
+        Assertions.assertEquals(0, new ArgumentParsers(0, Integer::valueOf, 1)
                 .parse(List.of(), option()));
     }
 
