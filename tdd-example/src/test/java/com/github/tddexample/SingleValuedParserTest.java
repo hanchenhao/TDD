@@ -28,12 +28,14 @@ class SingleValuedParserTest {
     //  输入：-p 8080 8081，异常提示
     @Test
     public void should_not_allow_extra_arguments_for_bool_option() {
-        Assertions.assertThrows(TooManyArgumentsException.class, () -> new SingleValuedParser(0, Integer::valueOf).parse(Arrays.asList("8080", "8801"), option()));
+        Assertions.assertThrows(TooManyArgumentsException.class,
+                () -> new SingleValuedParser(0, Integer::valueOf, 1)
+                        .parse(Arrays.asList("8080", "8801"), option()));
     }
 
     @Test
     public void should_set_a_default_value_for_bool_option() {
-        Assertions.assertEquals(0, new SingleValuedParser(0, Integer::valueOf)
+        Assertions.assertEquals(0, new SingleValuedParser(0, Integer::valueOf, 1)
                 .parse(List.of(), option()));
     }
 

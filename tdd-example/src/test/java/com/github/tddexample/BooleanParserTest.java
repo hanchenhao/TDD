@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 class BooleanParserTest {
 
@@ -23,13 +24,17 @@ class BooleanParserTest {
     // 输入：-l t f，输出：异常提示
     @Test
     public void should_not_allow_extra_arguments_for_bool_option() {
-        Assertions.assertThrows(TooManyArgumentsException.class, () -> new BooleanParser().parse(Arrays.asList("-l", "t", "f"), option()));
+        Assertions.assertThrows(TooManyArgumentsException.class,
+                () -> new SingleValuedParser(false, (it) -> Objects.equals(it, "-l"), 0)
+                        .parse(Arrays.asList("-l", "t", "f"), option()));
     }
 
     // 未输入：-l 默认值false
     @Test
     public void should_set_a_default_value_for_bool_option() {
-        Assertions.assertFalse((Boolean) new BooleanParser().parse(List.of(), option()));
+        Assertions.assertFalse((Boolean) new SingleValuedParser(false,
+                (it) -> Objects.equals(it, "-l"), 0)
+                .parse(List.of(), option()));
     }
 
     @Test
