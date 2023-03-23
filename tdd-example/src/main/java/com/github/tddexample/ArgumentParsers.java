@@ -13,7 +13,7 @@ class ArgumentParsers implements ArgumentParser{
      private final Function<String, Object> valueParser;
      int expectedSize;
 
-     private ArgumentParsers(Object defaultValue, java.util.function.Function<String, Object> valueParser, int expectedSize) {
+     public ArgumentParsers(Object defaultValue, java.util.function.Function<String, Object> valueParser, int expectedSize) {
         this.defaultValue = defaultValue;
         this.valueParser = valueParser;
         this.expectedSize = expectedSize;
@@ -21,7 +21,6 @@ class ArgumentParsers implements ArgumentParser{
     static ArgumentParsers  bool(){
        return new ArgumentParsers(false, (it) -> Objects.equals(it, "-l"), 0);
     }
-
     static ArgumentParsers unary(Object defaultValue, java.util.function.Function<String, Object> valueParser){
          return new ArgumentParsers(defaultValue,valueParser,1);
     }
@@ -29,19 +28,20 @@ class ArgumentParsers implements ArgumentParser{
     @Override
      public Object parse(List<String> arguments, Option option) {
         int index = arguments.indexOf("-" + option.value());
-        if (booleanChecked(option, index)) return defaultValue;
-        if (valuesSizeChecked(arguments, index)) return defaultValue;
-        return valueParser.apply(arguments.get(index + expectedSize));
+        if (isBooleanOptionNull(option, index)) return defaultValue;
+        if (isValueSlopOver(arguments, index)) return defaultValue;
+        String value = arguments.get(index + expectedSize);
+        return valueParser.apply(value);
     }
 
-    private boolean valuesSizeChecked(List<String> arguments, int index) {
+    private boolean isValueSlopOver(List<String> arguments, int index) {
         val values = values(arguments, index);
         if (values.size() < expectedSize) return true;
         if (values.size() > expectedSize) throw new TooManyArgumentsException();
         return false;
     }
 
-    private static boolean booleanChecked(Option option, int index) {
+    private static boolean isBooleanOptionNull(Option option, int index) {
         return option.value().equals("l") && index == -1;
     }
 
